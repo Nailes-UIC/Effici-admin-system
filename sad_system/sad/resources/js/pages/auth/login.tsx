@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { router } from '@inertiajs/react'
+import { router, usePage } from '@inertiajs/react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  // ✅ Access flash message
+  const { props } = usePage()
+  const flash = props.flash as { success?: string }
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -16,6 +20,13 @@ export default function Login() {
         {/* Login Form */}
         <div className="flex flex-col justify-center p-8 w-80">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
+
+          {/* ✅ Flash success message */}
+          {flash?.success && (
+            <div className="mb-4 text-sm text-green-700 bg-green-100 border border-green-300 p-2 rounded">
+              {flash.success}
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
