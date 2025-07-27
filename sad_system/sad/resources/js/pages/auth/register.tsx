@@ -1,12 +1,5 @@
 import { useState } from 'react'
-import { router, usePage } from '@inertiajs/react'
-
-type FlashProps = {
-  flash?: {
-    success?: string
-    error?: string
-  }
-}
+import { router } from '@inertiajs/react'
 
 export default function Register() {
   const [firstName, setFirstName] = useState('')
@@ -15,9 +8,6 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [role, setRole] = useState('student')
-
-  const { props } = usePage<FlashProps>() // ✅ add generic for flash props
-  const successMessage = props.flash?.success
 
   const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -32,7 +22,7 @@ export default function Register() {
       last_name: lastName,
       email,
       password,
-      password_confirmation: confirmPassword, // ✅ added
+      password_confirmation: confirmPassword, // ✅ Laravel needs this
       role,
     })
   }
@@ -43,13 +33,6 @@ export default function Register() {
         {/* Register Form */}
         <div className="flex flex-col justify-center p-8 w-96">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Register</h2>
-
-          {/* ✅ Success Message */}
-          {successMessage && (
-            <div className="mb-4 p-3 text-sm text-green-700 bg-green-100 border border-green-400 rounded">
-              {successMessage}
-            </div>
-          )}
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="flex gap-2">
