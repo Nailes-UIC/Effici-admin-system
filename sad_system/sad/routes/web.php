@@ -23,12 +23,12 @@ Route::post('/login', [LoginController::class, 'store']);
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
 
-// ✅ Registration routes
-Route::get('/register', function () {
-    return Inertia::render('Auth/Register'); // lowercase to match /pages/auth/register.tsx
-})->name('register');
+// ✅ Registration routes (using auth.php routes instead)
+// Route::get('/register', function () {
+//     return Inertia::render('Auth/Register'); // lowercase to match /pages/auth/register.tsx
+// })->name('register');
 
-Route::post('/register', [RegisterController::class, 'store']);
+// Route::post('/register', [RegisterController::class, 'store']);
 
 
 

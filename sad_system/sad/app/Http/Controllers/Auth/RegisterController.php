@@ -14,7 +14,7 @@ class RegisterController extends Controller
     {
         // 🔍 Step 1: Confirm Laravel is receiving the POST request
         // Uncomment for testing: 
-         dd('✅ Reached controller', $request->all());
+        // dd('✅ Reached controller', $request->all());
 
         // 🔍 Step 2: Validate input data
         $validated = $request->validate([
