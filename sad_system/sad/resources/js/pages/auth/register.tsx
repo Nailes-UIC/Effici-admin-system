@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
+import { FiEye, FiEyeOff } from 'react-icons/fi'
 
 export default function Register() {
   const [firstName, setFirstName] = useState('')
@@ -8,6 +9,13 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [role, setRole] = useState('student')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev)
+  }
 
   const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -22,7 +30,7 @@ export default function Register() {
       last_name: lastName,
       email,
       password,
-      password_confirmation: confirmPassword, // ✅ Laravel needs this
+      password_confirmation: confirmPassword,
       role,
     })
   }
@@ -77,29 +85,48 @@ export default function Register() {
 
             <div>
               <label htmlFor="password" className="block text-sm text-gray-700 mb-1">Password</label>
-              <input
-                id="password"
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400"
-                placeholder="Create a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
+                >
+                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                </button>
+              </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm text-gray-700 mb-1">Confirm Password</label>
-              <input
-                id="confirmPassword"
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
+  <label htmlFor="confirmPassword" className="block text-sm text-gray-700 mb-1">Confirm Password</label>
+  <div className="relative">
+    <input
+      id="confirmPassword"
+      type={showConfirmPassword ? 'text' : 'password'}
+      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400"
+      placeholder="Confirm password"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      required
+    />
+    <button
+      type="button"
+      onClick={() => setShowConfirmPassword(prev => !prev)}
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
+    >
+      {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+    </button>
+  </div>
+</div>
+
 
             <div>
               <label htmlFor="role" className="block text-sm text-gray-700 mb-1">Role</label>
