@@ -39,6 +39,3 @@ Route::middleware(['auth'])->group(function () {
 // Load extra route files if needed
 require __DIR__ . '/settings.php';
 
-Route::get('/test-dean', function () {
-    return Inertia::render('deandashboard');
-});
