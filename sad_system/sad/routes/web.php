@@ -3,39 +3,42 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisteredUserController; // Updated from RegisterController
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
-// Redirect root to login page
+// 🔁 Redirect root to login page
 Route::get('/', fn () => redirect()->route('login'));
 
-// Show login page using Inertia
-Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
+// 🟩 Login Routes
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // ✅ use controller here
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-// Handle login submission
-Route::post('/login', [LoginController::class, 'store']);
-
-// Logout
-Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
-
-// ✅ Registration routes (cleaned and controller-based)
+// 🟩 Registration Routes
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
-// ✅ Protected routes (must be authenticated)
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
-});
-
-// ✅ Database connection test
+// ✅ Optional: Database connection check
 Route::get('/db-check', function () {
     try {
         DB::connection()->getPdo();
-        return '✅ Database is connected: ' . DB::connection()->getDatabaseName();
+        return '✅ Connected to DB: ' . DB::connection()->getDatabaseName();
     } catch (\Exception $e) {
-        return '❌ Database connection failed: ' . $e->getMessage();
+        return '❌ DB Error: ' . $e->getMessage();
     }
 });
 
+// 🟩 Role-based Dashboard Routes (authenticated only)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/student/dashboard', fn () => Inertia::render('studentdashboard'))->name('student.dashboard');
+    Route::get('/admin/dashboard', fn () => Inertia::render('admindashboard'))->name('admin.dashboard');
+    Route::get('/dean/dashboard', fn () => Inertia::render('deandashboard'))->name('dean.dashboard');
+
+});
+
+// Load extra route files if needed
 require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+
+Route::get('/test-dean', function () {
+    return Inertia::render('deandashboard');
+});

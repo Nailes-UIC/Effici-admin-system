@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
-        return Inertia::render('auth/login', [
+        return Inertia::render('auth/login', [ // ✅ Make sure this matches your folder structure
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
         ]);
@@ -30,10 +30,25 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // ✅ Redirect based on user role
+        switch ($user->role) {
+            case 'admin_assistant':
+                return redirect()->route('admin.dashboard');
+            case 'student':
+                return redirect()->route('student.dashboard');
+            case 'dean':
+                return redirect()->route('dean.dashboard');
+            default:
+                // 🚨 Fallback: logout and return with error
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'role' => 'Unauthorized role. Please contact admin.',
+                ]);
+        }
     }
 
     /**
