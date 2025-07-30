@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { router, usePage } from '@inertiajs/react'
 
 export default function Login() {
@@ -14,17 +14,36 @@ export default function Login() {
     router.post('/login', { email, password })
   }
 
+  const [showFlash, setShowFlash] = useState(true)
+
+  useEffect(() => {
+    if (flash?.success) {
+      const timeout = setTimeout(() => setShowFlash(false), 3000)
+      return () => clearTimeout(timeout)
+    }
+  }, [flash])
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex bg-white rounded-[20px] shadow-lg overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center">
+
+      {/* ✅ Background Image with Blur */}
+      <div className="absolute inset-0 bg-[url('/images/uic-bg.png')] bg-cover bg-center z-0">
+        <div className="absolute inset-0 backdrop-blur-[8px] bg-black/20"></div>
+      </div>
+
+      {/* ✅ Main Login Container */}
+      <div className="relative z-10 flex bg-white rounded-[20px] shadow-lg overflow-hidden">
         {/* Login Form */}
         <div className="flex flex-col justify-center p-8 w-80">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
 
-          {/* ✅ Flash success message */}
           {flash?.success && (
-            <div className="mb-4 text-sm text-green-700 bg-green-100 border border-green-300 p-2 rounded">
-              {flash.success}
+            <div
+              className={`fixed top-10 left-1/2 transform -translate-x-1/2 bg-white border border-green-500 text-green-700 shadow-lg rounded-xl px-6 py-4 z-50 transition-opacity duration-500 ease-in-out ${
+                showFlash ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <div className="text-base font-semibold">{flash.success}</div>
             </div>
           )}
 

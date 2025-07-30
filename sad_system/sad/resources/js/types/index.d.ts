@@ -41,3 +41,16 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+export interface PageProps {
+  auth: {
+    user?: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      email: string;
+      role?: string;
+    } | null;
+  };
+    ziggy: any;
+  [key: string]: unknown; // ✅ Required for Inertia compatibility
+}
