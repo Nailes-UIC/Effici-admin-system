@@ -7,10 +7,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Auth\PublicVerificationController;
+use App\Http\Controllers\StudentDashboardController;
 
 // 🔁 Redirect root to login page
 Route::get('/', fn () => redirect()->route('login'));
@@ -59,6 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dean/dashboard', fn () => Inertia::render('deandashboard'))->name('dean.dashboard');
 });
 
+Route::get('/student/dashboard', StudentDashboardController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('student.dashboard');
 
 
 // 🔄 Include extra route files if needed

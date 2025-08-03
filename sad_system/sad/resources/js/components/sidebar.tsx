@@ -44,7 +44,6 @@ export default function Sidebar() {
   const { auth, url } = usePage().props as any;
   const role = (auth?.user?.role ?? 'student') as UserRole;
   const links = menuItems[role] || [];
-
   const currentPath = url ?? '';
 
   const handleLogout = (e: React.MouseEvent) => {
@@ -53,24 +52,28 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 h-screen bg-red-500 text-white flex flex-col justify-between shadow-lg overflow-hidden">
+    <aside className="w-64 h-screen bg-[#800000] text-white flex flex-col justify-between shadow-lg overflow-hidden transition-all duration-300 ease-in-out font-[Poppins]">
       {/* Header */}
       <div>
-        <div className="flex items-center justify-center gap-2 px-4 py-6 border-b border-red-400">
-          <img src="/images/logo.png" alt="EfficiAdmin Logo" className="w-6 h-6" />
-          <div className="text-lg font-bold font-serif">EfficiAdmin</div>
-        </div>
+       <div className="flex items-center justify-center gap-3 px-4 py-6 border-b border-[#9c2b2e]">
+  <img
+    src="/images/logo.png"
+    alt="EfficiAdmin Logo"
+    className="w-7 h-7 object-contain"
+  />
+  <span className="text-xl font-bold tracking-wide leading-none">EfficiAdmin</span>
+</div>
 
         {/* Navigation */}
-        <nav className="flex flex-col px-4 py-4 space-y-10">
+        <nav className="flex flex-col px-4 py-6 space-y-4">
           {links.map((item) => (
             <a
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out ${
                 currentPath === item.href
-                  ? 'bg-red-300 text-white'
-                  : 'hover:bg-red-400'
+                  ? 'bg-white/20 text-white shadow-inner'
+                  : 'hover:bg-white/10'
               }`}
             >
               <span className="text-base">{item.icon}</span>
@@ -84,7 +87,7 @@ export default function Sidebar() {
       <div className="px-4 pb-6">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-red-400 transition"
+          className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-300 ease-in-out"
         >
           <FaSignOutAlt className="text-base" />
           <span className="text-sm font-medium">Sign Out</span>

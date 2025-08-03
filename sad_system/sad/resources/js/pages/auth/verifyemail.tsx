@@ -23,7 +23,7 @@ export default function VerifyEmail() {
         <p className="text-gray-700 text-base leading-relaxed">{message}</p>
         <p className="text-sm text-gray-500">
           Once verified, you may{' '}
-          <a href="/login" className="text-blue-600 font-medium hover:underline">
+          <a href="/login" className="text-red-600 font-medium hover:underline">
             log in
           </a>
           .
