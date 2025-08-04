@@ -98,3 +98,4 @@ export default function AdminDashboard({ events = [], announcements = [] }: Admi
     </MainLayout>
   );
 }
+                                          
