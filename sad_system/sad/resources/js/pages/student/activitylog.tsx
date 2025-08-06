@@ -1,10 +1,13 @@
 import React from 'react';
+import MainLayout from '@/layouts/mainlayout';
 
 export default function ActivityLog() {
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Activity Log</h1>
-      <p>View the history of your activities here.</p>
-    </div>
+    <MainLayout>
+      <div className="p-4 font-poppins">
+        <h1 className="text-2xl font-bold text-red-600">Activity Log</h1>
+        <p>View the history of your activities here.</p>
+      </div>
+    </MainLayout>
   );
 }

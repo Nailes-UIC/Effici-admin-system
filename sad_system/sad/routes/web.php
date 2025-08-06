@@ -62,23 +62,22 @@ Route::get('/student/dashboard', StudentDashboardController::class)
     ->name('student.dashboard');
 
 Route::middleware(['auth', 'verified'])->prefix('student')->group(function () {
-    Route::get('/activity-request', fn () => Inertia::render('student/activityRequest'));
-    Route::get('/borrow-equipment', fn () => Inertia::render('student/borrowEquipment'));
-    Route::get('/activity-log', fn () => Inertia::render('student/activityLog'));
+    Route::get('/activity-request', fn () => Inertia::render('student/ActivityRequest'));
+    Route::get('/borrow-equipment', fn () => Inertia::render('student/BorrowEquipment'));
+    Route::get('/activity-log', fn () => Inertia::render('student/ActivityLog'));
     Route::get('/revision', fn () => Inertia::render('student/revision'));
-    Route::get('/edit-document', fn () => Inertia::render('student/editDocument'));
+    Route::get('/edit-document', fn () => Inertia::render('student/editdocument'));
 });
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
     Route::get('/request', fn () => Inertia::render('admin_assistant/request'));
-    Route::get('/activity-history', fn () => Inertia::render('admin_assistant/activityHistory'));
+    Route::get('/activity-history', fn () => Inertia::render('admin_assistant/ActivityHistory'));
 });
 
 Route::middleware(['auth', 'verified'])->prefix('dean')->group(function () {
     Route::get('/request', fn () => Inertia::render('dean/request'));
-    Route::get('/activity-history', fn () => Inertia::render('dean/activityHistory'));
+    Route::get('/activity-history', fn () => Inertia::render('dean/ActivityHistory'));
 });
-
 
 
 // 🔄 Include extra route files if needed
