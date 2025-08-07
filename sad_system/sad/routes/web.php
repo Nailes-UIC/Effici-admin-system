@@ -80,5 +80,19 @@ Route::middleware(['auth', 'verified'])->prefix('dean')->group(function () {
 });
 
 
+Route::get('/events', function () {
+    $events = \App\Models\Event::all(); // Replace with your actual model or mock data
+    return Inertia::render('events/ViewAllEvents', [
+        'events' => $events,
+    ]);
+})->name('events.index');
+
+Route::get('/announcements', function () {
+    $announcements = \App\Models\Announcement::all();
+    return Inertia::render('announcements/ViewAllAnnouncements', [
+        'announcements' => $announcements,
+    ]);
+})->name('announcements.index');
+
 // 🔄 Include extra route files if needed
 require __DIR__ . '/settings.php';

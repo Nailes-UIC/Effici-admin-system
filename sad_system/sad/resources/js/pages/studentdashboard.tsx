@@ -54,7 +54,7 @@ export default function StudentDashboard({ events, announcements }: StudentDashb
           <div className="bg-white rounded-xl shadow p-6 space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold text-red-600">Events</h2>
-              <a href="#" className="text-sm text-red-500 hover:underline">
+              <a href="/events" className="text-sm text-red-500 hover:underline">
                 View All
               </a>
             </div>
@@ -76,7 +76,7 @@ export default function StudentDashboard({ events, announcements }: StudentDashb
           <div className="bg-white rounded-xl shadow p-6 space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold text-red-600">Announcements</h2>
-              <a href="#" className="text-sm text-red-500 hover:underline">
+              <a href="/announcements" className="text-sm text-red-500 hover:underline">
                 View All
               </a>
             </div>

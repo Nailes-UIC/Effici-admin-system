@@ -45,7 +45,7 @@ const menuItems: Record<UserRole, MenuItem[]> = {
 export default function Sidebar() {
   const { auth, url } = usePage().props as any;
   const role = (auth?.user?.role ?? 'student') as UserRole;
-  const user = auth?.user ?? { name: 'Guest', role: 'student' };
+  const user = auth?.user ?? { first_name: 'Guest', role: 'student' };
   const currentPath = url ?? '';
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -108,7 +108,7 @@ export default function Sidebar() {
               className="w-10 h-10 rounded-full object-cover"
             />
             <div>
-              <p className="text-sm font-semibold leading-tight">{user.name}</p>
+              <p className="text-sm font-semibold leading-tight">{user.first_name}</p>
               <p className="text-xs opacity-80 capitalize">{user.role.replace('_', ' ')}</p>
             </div>
           </div>
