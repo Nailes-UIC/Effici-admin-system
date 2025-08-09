@@ -2,6 +2,8 @@
 
 import MainLayout from '@/layouts/mainlayout';
 import { FaCalendarAlt } from 'react-icons/fa';
+import CommentSection from '@/components/CommentSection';
+import { useState } from 'react';
 
 interface Event {
   title: string;
@@ -13,7 +15,28 @@ interface Props {
   events: Event[];
 }
 
+interface Comment {
+  text: string;
+  author: string;
+  date: string;
+}
+
 export default function ViewAllEvents({ events }: Props) {
+  const [comments, setComments] = useState<Record<number, Comment[]>>({});
+
+  const addComment = (eventIndex: number, text: string) => {
+    const newComment = {
+      text,
+      author: 'You',
+      date: new Date().toLocaleString(),
+    };
+
+    setComments((prev) => ({
+      ...prev,
+      [eventIndex]: [...(prev[eventIndex] || []), newComment],
+    }));
+  };
+
   return (
     <MainLayout>
       <div className="p-6 font-poppins space-y-8">
@@ -40,6 +63,11 @@ export default function ViewAllEvents({ events }: Props) {
                     <span className="text-xs text-gray-400">{event.date}</span>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">{event.title}</h3>
+
+                  <CommentSection
+                    comments={comments[index] || []}
+                    onAddComment={(text) => addComment(index, text)}
+                  />
                 </div>
               ))
             ) : (

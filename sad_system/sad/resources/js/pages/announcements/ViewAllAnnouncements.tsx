@@ -2,6 +2,8 @@
 
 import MainLayout from '@/layouts/mainlayout';
 import { FaBullhorn } from 'react-icons/fa';
+import CommentSection from '@/components/CommentSection';
+import { useState } from 'react';
 
 interface Announcement {
   title: string;
@@ -14,10 +16,31 @@ interface Props {
   announcements: Announcement[];
 }
 
+interface Comment {
+  text: string;
+  author: string;
+  date: string;
+}
+
 export default function ViewAllAnnouncements({ announcements }: Props) {
   const filtered = announcements.filter(
     (a) => a.createdBy === 'admin_assistant' || a.createdBy === 'dean'
   );
+
+  const [comments, setComments] = useState<Record<number, Comment[]>>({});
+
+  const addComment = (index: number, text: string) => {
+    const newComment = {
+      text,
+      author: 'You',
+      date: new Date().toLocaleString(),
+    };
+
+    setComments((prev) => ({
+      ...prev,
+      [index]: [...(prev[index] || []), newComment],
+    }));
+  };
 
   return (
     <MainLayout>
@@ -46,6 +69,11 @@ export default function ViewAllAnnouncements({ announcements }: Props) {
                   </div>
                   <h3 className="font-bold text-gray-800 mb-1">{a.title}</h3>
                   <p className="text-sm text-gray-600">{a.description}</p>
+
+                  <CommentSection
+                    comments={comments[index] || []}
+                    onAddComment={(text) => addComment(index, text)}
+                  />
                 </div>
               ))
             ) : (
