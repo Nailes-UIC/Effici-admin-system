@@ -67,7 +67,12 @@ export default function Request() {
   return (
     <MainLayout>
       <div className="p-6 font-poppins">
-      
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-black">Request Management</h1>
+          <p className="text-gray-600">Review and manage student activity requests.</p>
+        </div>
+        
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg shadow-sm">
