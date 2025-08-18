@@ -5,6 +5,11 @@ import { Calendar, Tv, Speaker, Projector, Cable } from "lucide-react";
 export default function BorrowEquipment() {
   return (
     <MainLayout>
+      {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-black">Equipment Request</h1>
+          <p className="text-gray-600">Students can submit requests for equipment.</p>
+        </div>
       <div className="p-6 font-poppins text-black space-y-8">
         {/* Available Equipment */}
         <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">

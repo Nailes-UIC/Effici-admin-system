@@ -9,7 +9,7 @@ import {
   FaUser,
   FaChevronDown,
 } from 'react-icons/fa';
-import { usePage } from '@inertiajs/react';
+import { usePage, Link } from '@inertiajs/react'; // ✅ Import Link
 import { Inertia } from '@inertiajs/inertia';
 import { ReactElement, useState, useRef, useEffect } from 'react';
 
@@ -28,7 +28,7 @@ const menuItems: Record<UserRole, MenuItem[]> = {
     { name: 'Borrow Equipment', href: '/student/borrow-equipment', icon: <FaLock /> },
     { name: 'Activity Log', href: '/student/activity-log', icon: <FaChartLine /> },
     { name: 'Revision', href: '/student/revision', icon: <FaBook /> },
-    { name: 'Edit Document', href: '/student/edit-document', icon: <FaEdit /> },
+    { name: 'Request Tracking', href: '/student/request-tracking', icon: <FaEdit /> },
   ],
   admin_assistant: [
     { name: 'Home', href: '/admin/dashboard', icon: <FaHome /> },
@@ -68,81 +68,84 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="w-64 h-screen bg-[#e6232a] text-white flex flex-col justify-between shadow-lg font-[Poppins] overflow-hidden fixed left-0 top-0">
-      {/* Header */}
-      <div>
-        <div className="flex items-center justify-center gap-3 px-4 py-6 border-b border-[#e6232a]">
-          <img src="/images/logo.png" alt="EfficiAdmin Logo" className="w-7 h-7 object-contain" />
-          <span className="text-xl font-bold tracking-wide leading-none">EfficiAdmin</span>
+    <>
+      <aside className="w-64 h-screen bg-[#e6232a] text-white flex flex-col justify-between shadow-lg font-[Poppins] overflow-hidden fixed left-0 top-0">
+        {/* Header */}
+        <div>
+          <div className="flex items-center justify-center gap-3 px-4 py-6 border-b border-[#e6232a]">
+            <img src="/images/logo.png" alt="EfficiAdmin Logo" className="w-7 h-7 object-contain" />
+            <span className="text-xl font-bold tracking-wide leading-none">EfficiAdmin</span>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex flex-col px-4 pt-6 space-y-10">
+            {menuItems[role]?.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                preserveState={false} // ✅ Ensure fresh props
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out ${
+                  currentPath === item.href
+                    ? 'bg-white/20 text-white shadow-inner'
+                    : 'hover:bg-white/10'
+                }`}
+              >
+                <span className="text-base">{item.icon}</span>
+                <span className="text-sm font-medium">{item.name}</span>
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex flex-col px-4 pt-6 space-y-10">
-          {menuItems[role]?.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out ${
-                currentPath === item.href
-                  ? 'bg-white/20 text-white shadow-inner'
-                  : 'hover:bg-white/10'
-              }`}
-            >
-              <span className="text-base">{item.icon}</span>
-              <span className="text-sm font-medium">{item.name}</span>
-            </a>
-          ))}
-        </nav>
-      </div>
-
-      {/* Profile Dropdown */}
-      <div className="relative px-4 py-6" ref={dropdownRef}>
-        <div
-          className="flex items-center justify-between bg-white text-black rounded-xl p-2 cursor-pointer shadow-md"
-          onClick={() => setDropdownOpen((prev) => !prev)}
-        >
-          <div className="flex items-center gap-3">
-            <img
-              src="/images/profile.png"
-              alt="Profile"
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <div>
-              <p className="text-sm font-semibold leading-tight">{user.first_name}</p>
-              <p className="text-xs opacity-80 capitalize">{user.role.replace('_', ' ')}</p>
+        {/* Profile Dropdown */}
+        <div className="relative px-4 py-6" ref={dropdownRef}>
+          <div
+            className="flex items-center justify-between bg-white text-black rounded-xl p-2 cursor-pointer shadow-md"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+          >
+            <div className="flex items-center gap-3">
+              <img
+                src="/images/profile.png"
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+              <div>
+                <p className="text-sm font-semibold leading-tight">{user.first_name}</p>
+                <p className="text-xs opacity-80 capitalize">{user.role.replace('_', ' ')}</p>
+              </div>
             </div>
+            <FaChevronDown className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </div>
-          <FaChevronDown className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-        </div>
 
-        {/* Dropdown Menu */}
-        {dropdownOpen && (
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-48 bg-white text-black rounded-xl shadow-md z-50 text-sm overflow-hidden">
-            <a
-              href="/profile"
-              className="flex items-center gap-2 px-4 py-2 hover:bg-black/10 transition"
-            >
-              <FaUser className="text-xs" />
-              <span>Profile</span>
-            </a>
-            <button
-              className="flex w-full items-center gap-2 px-4 py-2 hover:bg-black/10 transition"
-              onClick={() => {
-                setShowConfirm(true);
-                setDropdownOpen(false);
-              }}
-            >
-              <FaSignOutAlt className="text-xs" />
-              <span>Logout</span>
-            </button>
-          </div>
-        )}
-      </div>
+          {/* Dropdown Menu */}
+          {dropdownOpen && (
+            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-48 bg-white text-black rounded-xl shadow-md z-50 text-sm overflow-hidden">
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 px-4 py-2 hover:bg-black/10 transition"
+              >
+                <FaUser className="text-xs" />
+                <span>Profile</span>
+              </Link>
+              <button
+                className="flex w-full items-center gap-2 px-4 py-2 hover:bg-black/10 transition"
+                onClick={() => {
+                  setShowConfirm(true);
+                  setDropdownOpen(false);
+                }}
+              >
+                <FaSignOutAlt className="text-xs" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </aside>
 
       {/* Logout Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999]">
-          <div className="bg-white text-black p-6 rounded-xl shadow-lg w-[90%] max-w-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[99999]">
+          <div className="bg-white text-black p-6 rounded-xl shadow-lg w-[90%] max-w-sm relative">
             <h2 className="text-lg font-bold mb-2">Logout Confirmation</h2>
             <p className="text-sm mb-4">Are you sure you want to log out?</p>
             <div className="flex justify-end gap-2">
@@ -162,6 +165,6 @@ export default function Sidebar() {
           </div>
         </div>
       )}
-    </aside>
+    </>
   );
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\ActivityRequestController;
 
 // 🔁 Redirect root to login page
 Route::get('/', fn () => redirect()->route('login'));
@@ -32,67 +33,79 @@ Route::get('/db-check', function () {
     }
 });
 
-
-// ✅ Show the verifyemail.tsx page (no auth required)
+// ✅ Email Verification Routes
 Route::get('/email/verify', function () {
     return Inertia::render('auth/verifyemail', [
         'emailJustSent' => Session::get('status') === 'verification-link-sent',
     ]);
 })->name('verification.notice');
 
-// ✅ Handle the verification link (sent via email)
 Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
 
-// ✅ Resend verification email (requires login)
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.send');
-    
-// 🟩 Role-based Dashboard Routes (authenticated AND verified)
+
+// 🟩 Role-based Dashboards
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/student/dashboard', fn () => Inertia::render('studentdashboard'))->name('student.dashboard');
+    Route::get('/student/dashboard', StudentDashboardController::class)->name('student.dashboard');
     Route::get('/admin/dashboard', fn () => Inertia::render('admindashboard'))->name('admin.dashboard');
     Route::get('/dean/dashboard', fn () => Inertia::render('deandashboard'))->name('dean.dashboard');
 });
 
-Route::get('/student/dashboard', StudentDashboardController::class)
-    ->middleware(['auth', 'verified'])
-    ->name('student.dashboard');
-
+// 🟩 Student Routes
 Route::middleware(['auth', 'verified'])->prefix('student')->group(function () {
-    Route::get('/activity-request', fn () => Inertia::render('student/ActivityRequest'));
-    Route::get('/borrow-equipment', fn () => Inertia::render('student/BorrowEquipment'));
-    Route::get('/activity-log', fn () => Inertia::render('student/ActivityLog'));
-    Route::get('/revision', fn () => Inertia::render('student/revision'));
-    Route::get('/edit-document', fn () => Inertia::render('student/editdocument'));
+    // 👉 Use controller for activity request so props (stats + requests) are passed
+    Route::get('/activity-request', [ActivityRequestController::class, 'index'])
+        ->name('student.activity-request');
+
+    Route::get('/borrow-equipment', fn () => Inertia::render('student/BorrowEquipment'))
+        ->name('student.borrow-equipment');
+    Route::get('/activity-log', fn () => Inertia::render('student/ActivityLog'))
+        ->name('student.activity-log');
+    Route::get('/revision', fn () => Inertia::render('student/Revision'))
+        ->name('student.revision');
+    Route::get('/request-tracking', fn () => Inertia::render('student/RequestTracking'))
+        ->name('student.request-tracking');
 });
 
+// 🟩 Admin Routes
 Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
-    Route::get('/request', fn () => Inertia::render('admin_assistant/request'));
-    Route::get('/activity-history', fn () => Inertia::render('admin_assistant/ActivityHistory'));
+    Route::get('/request', fn () => Inertia::render('admin_assistant/request'))
+        ->name('admin.request');
+    Route::get('/activity-history', fn () => Inertia::render('admin_assistant/ActivityHistory'))
+        ->name('admin.activity-history');
 });
 
+// 🟩 Dean Routes
 Route::middleware(['auth', 'verified'])->prefix('dean')->group(function () {
-    Route::get('/request', fn () => Inertia::render('dean/request'));
-    Route::get('/activity-history', fn () => Inertia::render('dean/ActivityHistory'));
+    Route::get('/request', fn () => Inertia::render('dean/request'))
+        ->name('dean.request');
+    Route::get('/activity-history', fn () => Inertia::render('dean/ActivityHistory'))
+        ->name('dean.activity-history');
 });
 
-
+// 🟩 Events + Announcements
 Route::get('/events', function () {
-    $events = \App\Models\Event::all(); // Replace with your actual model or mock data
-    return Inertia::render('events/ViewAllEvents', [
-        'events' => $events,
-    ]);
+    $events = \App\Models\Event::all();
+    return Inertia::render('events/ViewAllEvents', ['events' => $events]);
 })->name('events.index');
 
 Route::get('/announcements', function () {
     $announcements = \App\Models\Announcement::all();
-    return Inertia::render('announcements/ViewAllAnnouncements', [
-        'announcements' => $announcements,
-    ]);
+    return Inertia::render('announcements/ViewAllAnnouncements', ['announcements' => $announcements]);
 })->name('announcements.index');
+
+// 🟩 Activity Request CRUD
+Route::middleware(['auth'])->group(function () {
+    Route::get('/activity-requests', [ActivityRequestController::class, 'index'])->name('activity-requests.index');
+    Route::post('/activity-requests', [ActivityRequestController::class, 'store'])->name('activity-requests.store');
+    Route::patch('/activity-requests/{id}', [ActivityRequestController::class, 'update'])->name('activity-requests.update');
+    Route::delete('/activity-requests/{requestId}/files/{fileId}', [ActivityRequestController::class, 'destroyFile'])
+        ->name('activity-requests.files.destroy');
+});
 
 // 🔄 Include extra route files if needed
 require __DIR__ . '/settings.php';
