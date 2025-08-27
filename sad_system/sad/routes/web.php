@@ -10,7 +10,8 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\ActivityRequestController;
-
+use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\EquipmentRequestController;
 // 🔁 Redirect root to login page
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -61,8 +62,10 @@ Route::middleware(['auth', 'verified'])->prefix('student')->group(function () {
     Route::get('/activity-request', [ActivityRequestController::class, 'index'])
         ->name('student.activity-request');
 
-    Route::get('/borrow-equipment', fn () => Inertia::render('student/BorrowEquipment'))
+    // FIX: Use controller for borrow-equipment
+    Route::get('/borrow-equipment', [EquipmentController::class, 'index'])
         ->name('student.borrow-equipment');
+
     Route::get('/activity-log', fn () => Inertia::render('student/ActivityLog'))
         ->name('student.activity-log');
     Route::get('/revision', fn () => Inertia::render('student/Revision'))
@@ -107,5 +110,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('activity-requests.files.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment.index');
+    Route::post('/equipment/availability', [EquipmentController::class, 'availability'])->name('equipment.availability');
+
+    Route::post('/equipment-requests', [EquipmentRequestController::class, 'store'])->name('equipment-requests.store');
+});
 // 🔄 Include extra route files if needed
 require __DIR__ . '/settings.php';

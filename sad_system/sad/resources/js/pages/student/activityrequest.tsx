@@ -13,6 +13,7 @@ import "./datepicker-theme.css"; // custom theme file
 import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/react";
 import type { PageProps as InertiaPageProps } from "@inertiajs/core";
+import { motion } from "framer-motion";
 
 type RequestStatus = "pending" | "under_review" | "approved" | "completed";
 
@@ -70,6 +71,40 @@ interface PageProps extends InertiaPageProps {
     error?: string;
   };
 }
+
+interface CalendarDayProps {
+  day: number;
+  isBooked: boolean;
+  activity?: string;
+}
+
+const CalendarDay: React.FC<CalendarDayProps> = ({ day, isBooked, activity }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, translateY: -4 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className={`relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer
+        ${
+          isBooked
+            ? "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 shadow-sm"
+            : "bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-sm"
+        }
+        hover:shadow-lg transition-shadow duration-200`}
+    >
+      <div className="font-medium text-2xl mb-1">{day}</div>
+      {activity && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute text-xs left-2 right-2 bottom-2 bg-white/90 backdrop-blur-sm 
+            rounded-lg px-2 py-1 text-center truncate shadow-sm"
+        >
+          {activity}
+        </motion.div>
+      )}
+    </motion.div>
+  );
+};
 
 export default function ActivityRequest() {
   const { auth, activityRequests: initialRequests, stats: serverStats, flash } =
@@ -294,29 +329,43 @@ export default function ActivityRequest() {
         </div>
       )}
 
-      <div className="p-6 font-poppins min-h-screen text-black">
+      <div className="p-6 font-poppins min-h-screen text-black bg-gradient-to-br from-red-50 via-white to-red-100">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-black">Activity Request</h1>
-          <p className="text-gray-600">
-            Students can submit requests for activities.
-          </p>
+        <div className="mb-8 flex flex-col gap-1">
+          <h1 className="text-3xl font-bold text-red-600 tracking-tight">Activity Request</h1>
+          <p className="text-gray-600 text-base">Students can submit requests for activities.</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-8">
           {[
-            { label: "Total Requests", value: stats.total, color: "text-red-500" },
-            { label: "Pending", value: stats.pending, color: "text-yellow-500" },
-            { label: "Approved", value: stats.approved, color: "text-green-500" },
-            { label: "Under Review", value: stats.under_review, color: "text-blue-500" },
+            {
+              label: "Total Requests",
+              value: stats.total,
+              color: "text-red-500",
+            },
+            {
+              label: "Pending",
+              value: stats.pending,
+              color: "text-yellow-500",
+            },
+            {
+              label: "Approved",
+              value: stats.approved,
+              color: "text-green-500",
+            },
+            {
+              label: "Under Review",
+              value: stats.under_review,
+              color: "text-blue-500",
+            },
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="bg-white p-4 rounded-2xl shadow text-center"
+              className="bg-white p-5 rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center"
             >
-              <div className="text-sm text-gray-500">{stat.label}</div>
-              <div className={`text-2xl font-bold ${stat.color}`}>
+              <div className="text-xs text-gray-500 mb-1">{stat.label}</div>
+              <div className={`text-3xl font-extrabold ${stat.color}`}>
                 {stat.value}
               </div>
             </div>
@@ -324,78 +373,82 @@ export default function ActivityRequest() {
         </div>
 
         {/* Calendar + categorization */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Calendar */}
-          <div className="bg-white rounded-2xl p-4 shadow">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold">Schedule Availability</h2>
-              <button className="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600">
+          <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-semibold text-xl text-red-600">Schedule Availability</h2>
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 
+                  rounded-lg shadow-md hover:shadow-xl transition-all duration-200 flex items-center gap-2 font-medium"
+              >
+                <FaChevronRight className="text-white" />
                 View Calendar
-              </button>
+              </motion.button>
             </div>
-            {/* Month nav */}
-            <div className="flex justify-between items-center mb-2">
-              <button
+            {/* Month navigation */}
+            <div className="flex justify-between items-center mb-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => navigateMonth("prev")}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-2 hover:bg-red-100 rounded-full transition"
               >
-                <FaChevronLeft className="text-gray-600" />
-              </button>
-              <div className="text-sm text-gray-500">{calendarInfo.monthName}</div>
-              <button
+                <FaChevronLeft className="text-red-500" />
+              </motion.button>
+              <div className="text-lg font-semibold text-gray-700 tracking-wide">
+                {calendarInfo.monthName}
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => navigateMonth("next")}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-2 hover:bg-red-100 rounded-full transition"
               >
-                <FaChevronRight className="text-gray-600" />
-              </button>
+                <FaChevronRight className="text-red-500" />
+              </motion.button>
             </div>
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 gap-2 text-center text-sm">
+            <div className="grid grid-cols-7 gap-3 text-center">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                <div key={d} className="font-semibold text-gray-700 p-1">
+                <div
+                  key={d}
+                  className="font-semibold text-red-500 p-2 text-sm tracking-wider"
+                >
                   {d}
                 </div>
               ))}
-              {Array.from(
-                { length: calendarInfo.startingDayOfWeek },
-                (_, i) => (
-                  <div key={`empty-${i}`} className="p-2"></div>
-                )
-              )}
+              {Array.from({ length: calendarInfo.startingDayOfWeek }, (_, i) => (
+                <div key={`empty-${i}`} className="p-2"></div>
+              ))}
               {Array.from({ length: calendarInfo.daysInMonth }, (_, i) => {
                 const day = i + 1;
                 const dateStr = `${calendarInfo.year}-${String(
                   calendarInfo.month + 1
                 ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                 const booked = bookedActivities.find((a) => a.date === dateStr);
+
                 return (
-                  <div
+                  <CalendarDay
                     key={day}
-                    className={`relative flex flex-col items-center justify-center p-2 rounded-lg border min-h-[60px] ${
-                      booked
-                        ? "bg-yellow-50 border-yellow-200 text-yellow-800"
-                        : "bg-green-50 border-green-200 text-green-800"
-                    }`}
-                  >
-                    <div className="font-medium text-lg">{day}</div>
-                    {booked && (
-                      <div className="absolute text-[9px] left-1 right-1 bottom-1 bg-white bg-opacity-80 rounded px-1">
-                        {booked.name}
-                      </div>
-                    )}
-                  </div>
+                    day={day}
+                    isBooked={!!booked}
+                    activity={booked?.name}
+                  />
                 );
               })}
             </div>
           </div>
 
           {/* Request Categorization */}
-          <div className="bg-white rounded-2xl p-4 shadow">
-            <h2 className="font-semibold mb-2">Request Categorization</h2>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 flex flex-col justify-start">
+            <h2 className="font-semibold text-lg text-red-600 mb-6">Request Categorization</h2>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 outline-none bg-white text-black"
+              className="w-full border border-red-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 outline-none bg-white text-black transition-all duration-150"
             >
               <option value="minor">Minor – Low-priority</option>
               <option value="normal">Normal – Standard process</option>
@@ -404,13 +457,16 @@ export default function ActivityRequest() {
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="my-10 border-t border-red-100"></div>
+
         {/* Request Form */}
         {user.role === "student" && (
-          <div className="bg-white rounded-2xl p-6 mt-6 shadow">
-            <h2 className="font-semibold mb-4">Submit New Request</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl p-8 mt-6 shadow-xl border border-gray-100">
+            <h2 className="font-semibold text-xl text-red-600 mb-6">Submit New Request</h2>
+            <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-semibold mb-2 text-gray-700">
                   Activity Name
                 </label>
                 <input
@@ -418,27 +474,28 @@ export default function ActivityRequest() {
                   placeholder="Enter activity name"
                   value={activityName}
                   onChange={(e) => setActivityName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black"
+                  className="w-full border border-red-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black transition-all duration-150"
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-semibold mb-2 text-gray-700">
                   Activity Purpose
                 </label>
                 <textarea
                   placeholder="Describe the purpose of this activity"
                   value={activityPurpose}
                   onChange={(e) => setActivityPurpose(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black"
+                  className="w-full border border-red-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black transition-all duration-150"
                   disabled={isSubmitting}
+                  rows={3}
                 ></textarea>
               </div>
 
               {/* Start + End Date */}
-              <div className="md:col-span-2 flex flex-col md:flex-row md:gap-4 max-w-2xl">
+              <div className="md:col-span-2 flex flex-col md:flex-row md:gap-6 max-w-2xl">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
                     Start Date & Time
                   </label>
                   <DatePicker
@@ -448,12 +505,12 @@ export default function ActivityRequest() {
                     timeIntervals={30}
                     dateFormat="Pp"
                     placeholderText="Select start date & time"
-                    className="w-full border border-red-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black"
+                    className="w-full border border-red-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black transition-all duration-150"
                     disabled={isSubmitting}
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
                     End Date & Time
                   </label>
                   <DatePicker
@@ -464,7 +521,7 @@ export default function ActivityRequest() {
                     dateFormat="Pp"
                     minDate={startDateTime ?? undefined}
                     placeholderText="Select end date & time"
-                    className="w-full border border-red-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black"
+                    className="w-full border border-red-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 outline-none text-black transition-all duration-150"
                     disabled={isSubmitting}
                   />
                 </div>
@@ -472,12 +529,12 @@ export default function ActivityRequest() {
 
               {/* File Uploads */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-semibold mb-2 text-gray-700">
                   Attachments
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50">
-                  <FaPaperclip className="mx-auto text-gray-500 text-xl mb-2" />
-                  <p className="text-sm text-gray-500">
+                <div className="border-2 border-dashed border-red-200 rounded-lg p-6 text-center hover:bg-red-50 transition-all duration-150">
+                  <FaPaperclip className="mx-auto text-red-400 text-2xl mb-2" />
+                  <p className="text-sm text-gray-500 mb-2">
                     Drag and drop files here or
                   </p>
                   <label className="text-red-500 font-medium hover:underline cursor-pointer">
@@ -495,23 +552,27 @@ export default function ActivityRequest() {
                     />
                   </label>
                   {attachments.length > 0 && (
-                    <ul className="mt-2 text-sm text-left text-gray-600">
+                    <ul className="mt-3 text-sm text-left text-gray-600">
                       {attachments.map((file, index) => (
-                        <li key={index}>• {file.name}</li>
+                        <li key={index} className="mb-1">• {file.name}</li>
                       ))}
                     </ul>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex justify-end">
-              <button
+            <div className="flex justify-end mt-8">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-7 py-2.5 
+                  rounded-lg shadow-md hover:shadow-xl transition-all duration-200 font-semibold flex items-center gap-2"
                 onClick={() => setShowConfirmModal(true)}
                 disabled={isSubmitting}
-                className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 disabled:opacity-50"
               >
+                <FaChevronRight className="text-white" />
                 {isSubmitting ? "Submitting..." : "Submit Request"}
-              </button>
+              </motion.button>
             </div>
           </div>
         )}
@@ -520,36 +581,41 @@ export default function ActivityRequest() {
       {/* 🧾 Confirmation Modal – styled like your screenshot */}
       {showConfirmModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-red-100"
+          >
             {/* Close (X) */}
             <button
               onClick={() => setShowConfirmModal(false)}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+              className="absolute right-5 top-5 text-gray-400 hover:text-red-500 transition"
               aria-label="Close"
             >
               <FaTimes />
             </button>
 
             {/* Header */}
-            <div className="flex items-center mb-3">
-              <FaInfoCircle className="text-red-500 text-xl mr-2" />
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center mb-4">
+              <FaInfoCircle className="text-red-500 text-2xl mr-3" />
+              <h3 className="text-xl font-semibold text-gray-900">
                 Confirm Submission
               </h3>
             </div>
 
             {/* Body text */}
-            <p className="text-gray-600 text-sm leading-6 mb-4">
+            <p className="text-gray-600 text-base leading-6 mb-5">
               Are you sure you want to submit the activity request? Please review
               your details before proceeding.
             </p>
 
             {/* Checkbox */}
-            <label className="flex items-start space-x-3 mb-5 cursor-pointer">
+            <label className="flex items-start space-x-3 mb-6 cursor-pointer">
               <input
                 type="checkbox"
                 className="mt-1 h-4 w-4 rounded border-gray-300 accent-red-500"
@@ -566,14 +632,14 @@ export default function ActivityRequest() {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200"
+                className="px-5 py-2 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 font-medium transition"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmAndSubmit}
                 disabled={!confirmChecked || isSubmitting}
-                className={`px-4 py-2 rounded-lg text-white ${
+                className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
                   confirmChecked && !isSubmitting
                     ? "bg-red-500 hover:bg-red-600"
                     : "bg-red-300 cursor-not-allowed"
@@ -582,7 +648,7 @@ export default function ActivityRequest() {
                 {isSubmitting ? "Submitting..." : "Confirm & Submit"}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </MainLayout>

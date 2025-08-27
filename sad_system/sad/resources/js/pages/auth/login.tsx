@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 
@@ -7,13 +7,32 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('') // Add error state
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword)
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    router.post('/login', { email, password, remember })
+    setError('') // Reset error before login
+    router.post('/login', { email, password, remember }, {
+      onError: (errors: any) => {
+        if (errors.password) {
+          setError(errors.password)
+        } else if (errors.email) {
+          setError(errors.email)
+        } else {
+          setError('Login failed. Please check your credentials.')
+        }
+      }
+    })
   }
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(''), 3000) // Hide after 3 seconds
+      return () => clearTimeout(timer)
+    }
+  }, [error])
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gray-900 text-white [font-family:'Poppins',sans-serif] transition-opacity duration-500 opacity-100">
@@ -28,6 +47,13 @@ export default function Login() {
         {/* Login Form Section */}
         <div className="flex flex-col justify-center p-8 md:p-12 w-96">
           <h2 className="text-3xl font-bold text-center text-red-600 mb-6">Login</h2>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 text-center text-sm text-red-600 bg-red-100 rounded px-3 py-2 border border-red-300">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
